@@ -1,4 +1,4 @@
-<macro name="w3-enhance-project-with-querymodifier" modified="1506016838" max-elt-id="18" modified-by="edreir@IBM">
+<macro name="custom-enhance-project-with-querymodifier" modified="1506016838" max-elt-id="18" modified-by="edreir@IBM">
 <process-xsl>
 <![CDATA[
 
