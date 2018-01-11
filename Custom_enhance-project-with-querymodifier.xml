@@ -1,0 +1,59 @@
+<macro name="w3-enhance-project-with-querymodifier" modified="1506016838" max-elt-id="18" modified-by="edreir@IBM">
+<process-xsl>
+<![CDATA[
+
+  
+      <xsl:template match="/">
+        <xsl:variable name="context"><xsl:value-of select="viv:value-of('querymodifier-project-context')" /></xsl:variable>
+
+        <xsl:variable name="request">
+          <call-function name="call-querymodifier-service" process="">
+            <with name="query-xml" process=""><xsl:copy-of select="viv:current-query()" /></with>
+            <with name="context"><xsl:value-of select="$context" /></with>
+
+            <!-- For this sample we'll use the defaults for the function.
+                                 You can add additional parameters to this function call to
+                change the default behavior. Refer to
+                function.call-querymodifier-service.xml for a parameter listing
+                and information about each parameter.
+            -->
+            <!-- <with name="noisewords">customnoiseword1,customnoiseword2</with> -->
+          </call-function>
+        </xsl:variable>
+
+       <query>
+<!-- Uncomment this line for debugging -->
+          <response><xsl:copy-of select="viv:process-xml($request)" /></response> 
+
+<!-- Uncomment this line for more debugging
+               <log_nlq_query><xsl:copy-of select="viv:process-xml($request)/recommendations/context[@name=$context]/interpretations/interpretation/operator" /></log_nlq_query>  -->
+
+<!--Here  check to see if there is a field named 'query' if so the query is not empty -->  
+<xsl:variable name="notempty"><xsl:copy-of select="viv:process-xml($request)/recommendations/context[@name=$context]/interpretations/interpretation/operator[@logic='and']/term/@field='query'" /></xsl:variable>
+
+	           <xsl:choose>
+<!--Here I test the variable for value, if it matches the regex tru+ it means it is not empty and I will submit the query manipulated by NLQ strategies -->
+		   <xsl:when test="viv:test($notempty, 'tru+', 'regex')"> 
+ 		          <xsl:copy-of select="viv:process-xml($request)/recommendations/context[@name=$context]/interpretations/interpretation/operator" />  
+			  <!-- Uncomment this line for debugging
+			                                 <log when='1'><xsl:copy-of select="$notempty"/></log>  -->
+ 	 	   </xsl:when>
+
+<!-- If after being manipulated by NLQ the resulting query is empty, I will submit the original one-->
+	           <xsl:otherwise>
+                          <xsl:copy-of select="viv:current-query()" />
+                          <!-- Uncomment this line for debugging
+                                                         <log otherwise='1'><xsl:copy-of select="$notempty" /></log> -->
+        	   </xsl:otherwise>
+
+
+          </xsl:choose>
+
+        </query>
+
+      </xsl:template>
+    
+  
+]]>
+</process-xsl>
+</macro>
